@@ -1,0 +1,16 @@
+{
+  "name": "second-brain",
+  "version": "0.3.0",
+  "description": "Full second-brain operating system for a Karpathy-style Obsidian knowledge vault: the four operations (ingest / wrap-work / lint), periodic project-doc refresh (project-survey / project-decompose), read-only subagents, path-scoped guard rules, PostToolUse hooks, maintenance scripts, page templates, and the CLAUDE.md constitution baseline.",
+  "author": {
+    "name": "Yi",
+    "email": "dydifferent@gmail.com"
+  },
+  "keywords": [
+    "second-brain",
+    "obsidian",
+    "knowledge-management",
+    "zettelkasten",
+    "karpathy"
+  ]
+}

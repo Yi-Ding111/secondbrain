@@ -1,0 +1,23 @@
+{
+  "name": "yis-brain",
+  "owner": {
+    "name": "Yi",
+    "email": "dydifferent@gmail.com"
+  },
+  "metadata": {
+    "description": "Yi's second-brain toolkit — a full knowledge-vault operating system plus a lightweight work-machine capture tool.",
+    "version": "0.3.0"
+  },
+  "plugins": [
+    {
+      "name": "second-brain",
+      "source": "./second-brain",
+      "description": "Full second-brain OS for the personal machine: ingest / wrap-work / lint / project-survey / project-decompose skills, read-only subagents, path-scoped rules, hooks, scripts, templates, and the CLAUDE.md baseline."
+    },
+    {
+      "name": "work-capture",
+      "source": "./work-capture",
+      "description": "Standalone capture tool: AI thread → self-contained structured memory doc (no downstream/vault assumptions; output directly usable anywhere), tagged source:work-capture."
+    }
+  ]
+}

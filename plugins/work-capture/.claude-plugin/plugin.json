@@ -1,0 +1,15 @@
+{
+  "name": "work-capture",
+  "version": "0.3.0",
+  "description": "Standalone tool: turn the current AI thread into a self-contained, portable structured memory doc (mermaid flowchart + implementation logic + substantive problems/solutions + key decisions + recall hooks; never file/line diffs), tagged source:work-capture. Knows nothing about any downstream system; the output is directly usable anywhere.",
+  "author": {
+    "name": "Yi",
+    "email": "dydifferent@gmail.com"
+  },
+  "keywords": [
+    "work-capture",
+    "hand-off",
+    "portable",
+    "second-brain"
+  ]
+}
