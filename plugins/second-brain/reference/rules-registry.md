@@ -21,6 +21,8 @@ Path-scoped lazy-load. 只在 Claude 读匹配路径文件时进 context——�
 | `project-write.md` | `**/work/*/projects/*/**`、`**/projects/*/**` | 进项目目录的写前 checklist（读 CLAUDE.md → wiki.md → 决定 Tier）|
 | `snapshot-required.md` | `**/<project>.md`、`**/features/**`、`**/api/**` | 提醒 "编辑前必跑 `meta/scripts/snapshot-supersede.sh`" |
 | `inbox-handling.md` | `**/inbox/**` | 提醒 "dump zone 不是 query 源；待 ingest/wrap-work 消费" |
+| `ticket-branch.md` | `**/work/*/projects/*/**`、`**/projects/*/**`、`**/tasks/**` | 开工前从 `main` 切 `feature/<TICKET-ID>/<desc>`；绝不在 main 上做 ticket work，绝不替用户 commit/merge（根 [[CLAUDE]] §10 有 always-load 兜底）|
+| `plane-track.md` | `**/inbox/**`、`**/knowledge/**`、`**/experience/**`、`**/learning/**`、`**/work/*/projects/*/**`、`**/projects/*/**`、`**/wiki/**` | 整理内容前后走 Plane 账本：开工前 `list_projects` live 查项目 + 找 ticket（均确认）→ 整理 → 回写 comment + 状态 Done。实现 = `/track`（根 [[CLAUDE]] §6 有 always-load 兜底）|
 
 **Compaction 后丢失** — `paths:` rules 在 compaction 后 LOST 直到再读到匹配文件。所以**写法要让 "再读到时就够 self-contained"**，关键 invariant 也要在根 [[CLAUDE]] 里有一句兜底。
 
@@ -50,6 +52,9 @@ Path-scoped lazy-load. 只在 Claude 读匹配路径文件时进 context——�
 | `/ingest` | "ingest"、"整理一下"、"记入 brain" | `.claude/skills/ingest/SKILL.md` |
 | `/wrap-work` | "wrap up"、"完工"、"做完了" | `.claude/skills/wrap-work/SKILL.md` |
 | `/lint` | "lint"、"体检"、"check my brain" | `.claude/skills/lint/SKILL.md` |
+| `/track` | "track"、"整理并记录到 plane"、"记到 plane" | `.claude/skills/track/SKILL.md` |
+
+`/track` 是 Plane ↔ vault 的**信封 wrapper**：前 live 查 Plane 定位 project+ticket（确认闸）→ 中间调 `/ingest` 或 `/wrap-work` → 后回写 comment + 状态 Done。由 `plane-track.md` rule 提示、根 [[CLAUDE]] §6 兜底。
 
 三个 skill 共同约定：用 native tools 而非 MCP wiki（后者绑死 `.omc/wiki/`）；规则 defer 到 [[CLAUDE]]（skill 是 *how*，CLAUDE.md 是 *what*）；每次操作 append 一行根 `log.md`。
 

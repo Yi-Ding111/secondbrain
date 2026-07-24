@@ -1,7 +1,7 @@
 {
   "name": "work-capture",
-  "version": "0.3.0",
-  "description": "Standalone tool: turn the current AI thread into a self-contained, portable structured memory doc (mermaid flowchart + implementation logic + substantive problems/solutions + key decisions + recall hooks; never file/line diffs), tagged source:work-capture. Knows nothing about any downstream system; the output is directly usable anywhere.",
+  "version": "0.4.0",
+  "description": "Standalone work-capture toolkit (two skills, no downstream/vault assumptions): work-capture turns the current AI thread into a memory doc (logic/problems/decisions/recall); branch-review reads git diff vs a base branch and produces a change explanation (change flowchart + data-flow narrative + change details). Outputs tagged source:work-capture / source:branch-review with ticket/branch correlation keys; directly usable anywhere.",
   "author": {
     "name": "Yi",
     "email": "dydifferent@gmail.com"

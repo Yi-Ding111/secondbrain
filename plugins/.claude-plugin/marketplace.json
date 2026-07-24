@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Yi's second-brain toolkit — a full knowledge-vault operating system plus a lightweight work-machine capture tool.",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "plugins": [
     {
@@ -17,7 +17,7 @@
     {
       "name": "work-capture",
       "source": "./work-capture",
-      "description": "Standalone capture tool: AI thread → self-contained structured memory doc (no downstream/vault assumptions; output directly usable anywhere), tagged source:work-capture."
+      "description": "Standalone capture toolkit (2 skills): work-capture (AI thread → memory doc) + branch-review (git diff vs base → change flowchart/data-flow/details). Tagged source + ticket/branch keys; output directly usable anywhere."
     }
   ]
 }

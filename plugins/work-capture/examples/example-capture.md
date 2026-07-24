@@ -4,22 +4,13 @@ title: worker 静默丢任务修复 — 503 改指数退避重试
 date: 2026-07-12
 topic: worker retry 可靠性
 tags: [work, worker, retry, reliability]
-project: sapia/agents
 ticket: ML-1207
+branch: feature/ML-1207/worker-retry
+project: sapia/agents
 ---
 
 ## 概述 Summary
 worker 在下游返回 503 时会把任务永久丢弃，导致每天零星几个任务无声消失。本次改成有上限的指数退避重试 + 死信队列，止住了任务丢失。
-
-## 流程图 Flow
-```mermaid
-flowchart TD
-  A[收到任务] --> B[调用下游]
-  B -->|200| C[完成]
-  B -->|503/超时| D{尝试次数 < 上限?}
-  D -->|是| E[指数退避后重试] --> B
-  D -->|否| F[进死信队列 + 告警]
-```
 
 ## 实现逻辑 Implementation Logic
 在 dispatch 层包一层重试策略：对可重试错误（503、连接超时）做指数退避，最多 5 次；超限不再静默丢弃，而是投递死信队列并触发告警。重试计数与退避间隔随任务上下文传递，避免全局状态。

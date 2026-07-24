@@ -1,35 +1,45 @@
-# work-capture 输出格式
+# work-capture plugin — 输出格式
 
-work-capture 产出的**自描述格式**。任何工具/人都能读懂并直接使用——本格式**不假设**任何下游系统的存在(vault、知识库、路由规则都与本工具无关)。
+本 plugin 两个 skill 的**自描述**输出格式。任何工具/人都能读懂并直接使用——**不假设**任何下游系统的存在。
 
-## Frontmatter
+## 公共 frontmatter
 
 ```yaml
 ---
-source: work-capture      # 固定标记，标明这份文案由 work-capture 产出（唯一必需的识别字段）
-title: <一句话任务标题>    # 必填
+source: <work-capture | branch-review>   # 固定标记，标明由哪个 skill 产出（识别用）
+title: <一句话标题>        # 必填
 date: YYYY-MM-DD          # 必填
-topic: <主题短语>         # 必填
 tags: [work, <kw1>, <kw2>]
-# --- 以下可选，纯通用元数据（有就填，没有就省；不含任何下游/vault 概念）---
-project: <项目名>          # 可选：这次工作属于哪个项目/仓库
-ticket: <TICKET-ID>       # 可选：只引用编号，不复制 ticket 正文
+# --- 关联键（有就填，让同一任务的多份产出能互相关联/链接）---
+ticket: <TICKET-ID>       # 关联键首选；只引用编号，不复制正文
+branch: <branch 名>        # 关联键次选
+# --- 其它可选，纯通用元数据 ---
+project: <项目名>
+topic: <主题短语>          # work-capture 用
+base: <对比基准 branch>     # branch-review 用
 ---
 ```
 
-> `source: work-capture` 是消费方识别这份文案的唯一依据。**"这份文案该怎么用、往哪放"完全由消费方决定，与本工具无关。**
+> **关联键 `ticket` / `branch` 很关键**:同一个任务可能既跑了 `work-capture`(对话记忆)又跑了 `branch-review`(代码讲解)。填上关联键,下游消费方才能认出"这两份是一对"并互相链接。
 
-## 正文结构（6 段记忆)
+## 两种正文结构
 
-1. `## 概述 Summary` — 目标 / 为什么 / 解决了什么
-2. `## 流程图 Flow` — mermaid，含问题分支/解决路径（**必产**）
-3. `## 实现逻辑 Implementation Logic`
-4. `## 问题与方案 Problems & Solutions` — 现象 / 根因 / 弯路 / 最终方案
-5. `## 关键决策 Decisions`
-6. `## 回忆钩子 Recall Hooks`
+### work-capture(`source: work-capture`)—— 对话记忆，5 段
+1. `## 概述 Summary`
+2. `## 实现逻辑 Implementation Logic`
+3. `## 问题与方案 Problems & Solutions`（现象/根因/弯路/最终方案）
+4. `## 关键决策 Decisions`
+5. `## 回忆钩子 Recall Hooks`
 
-**禁止**：行号/文件 diff、Commit Timeline、Before-After 代码堆砌。
+（**不含流程图**——流程图由 branch-review 从代码画。）
 
-## 自包含要求
+### branch-review(`source: branch-review`)—— 代码改动讲解，3 部分
+1. `## 改动流程图 Change Flow`（mermaid，针对这次改动，含关键分支）
+2. `## 数据流叙述 Data Flow`（选一个经典场景：输入→经过→**改动点(前后对比,重点)**→输出）
+3. `## 改动详录 Change Details`（围绕改动的详细记录，按逻辑组织）
 
-一份产出必须**单独打开就完整可读**：图、frontmatter、正文都在一个文件里，无外部链接依赖、无 `[[wiki-link]]`。这样它可以被复制到任何地方直接用。
+## 公共约束
+
+- **禁止**:行号/文件 diff、Commit Timeline、Before-After 代码堆砌、逐行罗列。要"逻辑与数据流",不要"变更记录"。
+- **自包含**:图、frontmatter、正文都在**一个文件**里,无外部链接依赖、无 `[[wiki-link]]`——可复制到任何地方直接用。
+- **mermaid**:统一 `flowchart TD` 通用语法,任意 markdown 渲染器都能显示。

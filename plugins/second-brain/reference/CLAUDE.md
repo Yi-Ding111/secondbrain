@@ -93,6 +93,8 @@ Cheat-sheet: 普通页 `<slug>.md` (kebab) | 决策 `NNNN-<slug>.md` | Task `tas
 
 **Periodic project doc refresh**（项目级 doc 周期 reconcile，与四操作互补）：`/project-survey`（spawn `project-surveyor` 扫 code repo → inbox 中间文件）→ `/project-decompose`（parse 中间文件 → 路由 Tier-3/2 + snapshot-supersede）。详见 [[project-overview-system]] + 各 SKILL.md。
 
+**Plane 账本 wrapper**（整理内容前后同步 Plane ticket 生命周期）：`/track` —— 整理任何一块内容前先 **`list_projects` live 查询**（项目随时新增，**绝不用写死列表主观判断**）定位 project → 用户确认 → 项目内找 ticket → 确认（没找到问是否创建）→ 中间跑 `/ingest` 或 `/wrap-work` → 完成后回写 structured comment（`✅ 已整合` + 落地路径 + 日期）+ 状态置 **Done**。三处确认闸交给用户；状态只在收尾动。完整流程 `.claude/skills/track/SKILL.md`（`plane-track.md` rule 触碰整理路径时 auto-load）。
+
 ---
 
 ## 7. Supersede Patterns（核心规则——绝不静默覆盖）
@@ -136,6 +138,7 @@ Cheat-sheet: 普通页 `<slug>.md` (kebab) | 决策 `NNNN-<slug>.md` | Task `tas
 - **Cite everything** — vault 内回答每条 non-trivial claim 带 `[[page-id]]`
 - **Ask before crossing layers** — `thinking/drafts/` → `knowledge/` 是 promotion，先确认
 - **Log writes — prepend via anchor, do NOT read body** — 多页操作完后写 `log.md`（root 或 zone）：用 **Edit tool 把 `<!-- LOG-ANCHOR ... -->` 整行替换为 `<anchor>\n\n## YYYY-MM-DD — <topic>\n\n<body>`**——新 entry 落在 anchor 正下方、所有旧 entry 之上（newest 始终在 entry list 顶端）。**绝不 Read log.md body**，anchor 足够 unique。新 log 文件用 `meta/scripts/log-sort-and-anchor.sh <path>` 一次性插 anchor。详细 → [[claude-behavior]]
+- **开工前切 ticket 分支** — 领到一个 ticket、准备在 vault 里做它的工作前，先从 `main` 切 `feature/<TICKET-ID>/<desc>`（例 `feature/ED-1509/fix-race`）；**绝不在 `main` 上做 ticket work，绝不替用户 commit / merge**。完整规则 `.claude/rules/ticket-branch.md`（触碰 project/task 路径时 auto-load）
 - **Path-scoped 行为护栏 auto-load** — `tasks/**`、`superseded/**`、`raw/**`、`inbox/**`、project / live tier 文件由 `.claude/rules/` 触发提醒（见 §13）
 
 完整 per-operation posture（ingest / wrap-work / query / 分类不确定 / 冲突 / style）→ [[claude-behavior]]

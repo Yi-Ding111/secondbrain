@@ -28,28 +28,29 @@ triggers: ["ingest", "ingest this", "整理一下", "记入", "记录一下", "a
 
 ## Workflow
 
-### Step 0b — work-capture 交接落位（跨机接收端）
+### Step 0b — work-capture / branch-review 落位（跨机接收端）
 
-当 inbox 里出现 `source: work-capture` 文件（一份自包含记忆文案，只保证有 6 段 + 可选 `project`/`ticket` 元数据；work-capture 工具**不懂 vault 结构**，路由完全由本步骤决定）：
+当 inbox 里出现 work-capture plugin 的产出文件——`source: work-capture`（对话记忆，5 段：概述/实现逻辑/问题与方案/关键决策/回忆钩子）或 `source: branch-review`（代码改动讲解，3 部分：改动流程图/数据流叙述/改动详录）。这些工具**不懂 vault 结构**，路由完全由本步骤决定：
 
-1. Read 该文件，取 frontmatter：`title` / `date`，以及**可能有**的 `project` / `ticket`。
-2. **本 skill 自行推断落点**（work-capture 不再提供 zone/tier 提示）：
+1. Read 该文件，取 frontmatter：`title` / `date`、**关联键 `ticket` / `branch`**，以及可能有的 `project`。
+2. **本 skill 自行推断落点**（工具不提供 zone/tier 提示）：
    - **项目**：有 `project` 字段就用；没有则从正文内容(提到的服务/仓库/工单)推断映射到某个 `work/<co>/projects/<proj>`；实在判不出 → 留 inbox 并问用户目标项目。
    - **tier**：默认落 **Tier-1 task**（`work/<co>/projects/<proj>/tasks/YYYY/Mmm/YYYY-MM-DD-<slug>[-TICKET].md`，**frozen**）。若读正文判断这其实是某 feature 的行为变更 → 另按 **snapshot-supersede** 更新对应 Tier-2 `features/<feat>.md`（走脚本，CLAUDE §7）。
    - 写前必读 `<project>/CLAUDE.md` + `wiki.md`（project-write rule 会提醒）。
-3. **重构**：直接采用文案的 6 段（概述/流程图/实现逻辑/问题与方案/关键决策/回忆钩子）作为 task 正文——**保留 mermaid 图、保留问题/方案/决策，绝不降级成改动清单**。补 vault 专属 frontmatter（`category: task` / `frozen: true` / 🧊 banner / `source: work-capture` 保留溯源 / `project` / `ticket` / 本 skill 判定的 `features_touched`）。
-4. 把纯文本占位**补成 `[[link]]`**：Tier-2 feature、Tier-3 overview、相关 knowledge/decisions。
-5. 更新 `<project>/wiki.md` + `log.md` + zone wiki/log + 根 `log.md`（走 anchor，不读 body）。
-6. 消费完 → 删除 inbox 里的文件（它是 bridge，非 raw 素材）。
+3. **重构**：直接采用文案的各段作为 task 正文——work-capture 的 5 段 / branch-review 的 3 部分（**保留 mermaid 图、保留逻辑/问题/方案/决策，绝不降级成改动清单**）。补 vault 专属 frontmatter（`category: task` / `frozen: true` / 🧊 banner / `source` 保留溯源 / `project` / `ticket` / `branch` / 本 skill 判定的 `features_touched`）。
+4. **关联链接（存两份、不融合）**：同一个任务常有**两份** capture——`work-capture`（对话记忆）+ `branch-review`（代码讲解），靠 **`ticket` / `branch` 关联键**识别。发现 inbox 里或 vault 里已有**同 ticket/branch 的另一份** → **各存一份**、在两者的 Related 段**互相补 `[[link]]`**（对话记忆 ↔ 代码讲解），**不合并成一份**。
+5. 把其余纯文本占位**补成 `[[link]]`**：Tier-2 feature、Tier-3 overview、相关 knowledge/decisions。
+6. 更新 `<project>/wiki.md` + `log.md` + zone wiki/log + 根 `log.md`（走 anchor，不读 body）。
+7. 消费完 → 删除 inbox 里的文件（它是 bridge，非 raw 素材）。
 
-> 关键：所有"往哪放、属哪个 tier、动哪个 feature"的 **vault 路由知识都在本 skill 这一侧**——work-capture 只交出一份自包含好文案,不掺和落位。文案**已是记忆结构**,故本步主要做**推断落点 + 落位 + 补链接 + tier 传播**,不需再 fuse/蒸馏。
+> 关键：所有"往哪放、属哪个 tier、动哪个 feature、跟哪份互链"的 **vault 路由知识都在本 skill 这一侧**——工具只交出自包含好文案,不掺和落位。同任务的多份 capture **存两份 + 互链**（Yi 定，不融合）；文案**已是记忆结构**,本步做**推断落点 + 落位 + 互链 + 补链接**,不需再 fuse/蒸馏。
 
 ### Step 0 — Inbox pickup（无参调用时）
 
 如果用户直接 `/ingest` 不带材料，或者上下文里没有可 ingest 的内容：
 
 1. Glob `inbox/*.md`
-2. 过滤：frontmatter 有 `source: brain-digest` 或 `tags: [pending-ingest]` 的视为 **digest 文件**；有 **`source: work-capture`** 的视为 **工作机交接文件** → 走下方 Step 0b 专门分支（不当普通 digest 处理）
+2. 过滤：frontmatter 有 `source: brain-digest` 或 `tags: [pending-ingest]` 的视为 **digest 文件**；有 **`source: work-capture`** 或 **`source: branch-review`** 的视为 **work-capture plugin 产出** → 走下方 Step 0b 专门分支（不当普通 digest 处理）
 3. 列出所有 digest 文件（按 created 时间升序），给用户看 title + 文件名
 4. 询问：
    - "全部按顺序处理？"（默认）
